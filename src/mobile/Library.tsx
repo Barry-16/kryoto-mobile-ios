@@ -216,10 +216,10 @@ export function Library({ downloadsRequest = 0 }: { downloadsRequest?: number } 
               <li key={g.id} className="kryo-radius flex items-center gap-3 border border-border bg-card p-2">
                 <button type="button" onClick={() => push({ kind: 'lib', id: g.id })} className="flex min-w-0 grow items-center gap-3 text-left">
                   <Poster src={g.header ?? g.cover} title={g.title} nsfw={g.nsfw} ratio="aspect-video" className="w-24 shrink-0" />
-                  <span className="grid min-w-0 gap-0.5">
-                    <span className="flex items-center gap-1.5">
+                  <span className="grid min-w-0 grid-cols-1 gap-0.5">
+                    <span className="flex min-w-0 items-center gap-1.5">
                       {running.has(g.id) ? <span aria-label="Running" className="m-live size-2 shrink-0 rounded-full bg-success" /> : null}
-                      <span className="truncate text-xs font-bold text-foreground">{g.title}</span>
+                      <span className="min-w-0 truncate text-xs font-bold text-foreground">{g.title}</span>
                     </span>
                     <Caption>{formatPlaytime(g.playtimeSeconds)}</Caption>
                     <Caption>{formatLastPlayed(g.lastPlayed)}</Caption>
