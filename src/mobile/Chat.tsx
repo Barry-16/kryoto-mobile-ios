@@ -8,6 +8,7 @@ import { on, useWebBackend } from '@/lib/bridge'
 import { nameThisDevice, startActiveBeacon, useChatStatus, type ChatMessage } from '@/lib/chat'
 import { API, openExternal, siteUrl, type Me } from '@/mobile/auth'
 import { useApp } from '@/mobile/context'
+import { scanQr, ScanCancelled } from '@/mobile/scan'
 import { store } from '@/mobile/storage'
 import { createBackend } from '@/web/backend'
 
@@ -33,6 +34,24 @@ function install(token: string, userId: string, onSignedOut: () => void) {
 /** Signing out ends the engine with the page: its connection and keys in memory go with it. */
 export function endChat() {
   if (installed) window.location.reload()
+}
+
+/**
+ * The text behind a link QR: the recovery code itself, or a kryoto:// link
+ * that carries it (`...?code=XXXX-...`). Groups of four stay as they are.
+ */
+function linkCode(scanned: string): string {
+  const text = scanned.trim()
+  const fromLink = /[?&]code=([0-9A-Za-z-]+)/.exec(text)?.[1]
+  return (fromLink ? decodeURIComponent(fromLink) : text).replace(/\s+/g, '').toUpperCase()
+}
+
+/** The camera, for a phone linking this account's chat identity from another device. */
+function scanLinkCode(): Promise<string | null> {
+  return scanQr().then(linkCode).catch((e: unknown) => {
+    if (e instanceof ScanCancelled) return null
+    throw e
+  })
 }
 
 function accountOf(me: Me): Account {
@@ -63,6 +82,7 @@ export function ChatsTab({ onConversation }: { onConversation: (close: (() => vo
       account={account}
       onProfile={() => site(`/user/${encodeURIComponent(me.username)}`)}
       onWeb={site}
+      onScanCode={scanLinkCode}
       onJoinInvite={(invite) => push({ kind: 'game', slug: invite.slug })}
       onConversation={onConversation}
     />
