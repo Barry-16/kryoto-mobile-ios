@@ -4,6 +4,7 @@ import { SplashScene } from '@/boot/SplashScene'
 import { ACTION_FAILED_EVENT, AsciiBar, Button, Caption, IconButton } from '@/ui'
 import { dialogCount, watchDialogs } from '@/ui/dialog-focus'
 import { cn } from '@/lib/utils'
+import { OPEN_GAME_PAGE_EVENT } from '@/lib/window'
 import { ApprovePage } from '@/mobile/Approve'
 import {
   groupCode,
@@ -273,6 +274,17 @@ export function App() {
     }
     window.addEventListener('mobile-notification-open', opened)
     return () => window.removeEventListener('mobile-notification-open', opened)
+  }, [push])
+  // A game mention or a link to a game in text (lib/window.ts): its page here, not in the browser.
+  useEffect(() => {
+    const game = (e: Event) => {
+      const slug = (e as CustomEvent<string>).detail
+      if (typeof slug !== 'string' || !slug) return
+      e.preventDefault()
+      push({ kind: 'game', slug })
+    }
+    window.addEventListener(OPEN_GAME_PAGE_EVENT, game)
+    return () => window.removeEventListener(OPEN_GAME_PAGE_EVENT, game)
   }, [push])
   const openTab = (next: Tab) => {
     if (next !== tab) setSlide(TABS.findIndex((t) => t.id === next) > TABS.findIndex((t) => t.id === tab) ? 28 : -28)

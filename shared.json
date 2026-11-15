@@ -1,6 +1,6 @@
 {
   "source": "https://github.com/Kryoto-Dev/kryoto-desktop.git",
-  "ref": "794357e8133b3f2b29ceaba83a55a28589238426",
+  "ref": "51104a7fe40106c00c1ae81c4961c070b78d9af9",
   "worktree": [],
   "paths": [
     "env.d.ts",
@@ -92,13 +92,13 @@
     "lib/log.ts": "e153a0361ebdd1c471d09a2e8d90e1718cb14e96fdd6f5ba16dd49983ed793a5",
     "lib/notify.ts": "14d0be73422f98f3fbee8ca9ac84907e033fe2a6c9b341d0847422a783908693",
     "lib/play-reports.ts": "229c7c19a2b01a90352c5fee2a243e05365f4271e0c293f51b5c664662722735",
-    "lib/popup.ts": "580a145912b91b31b692062d6cdcd408e47208f1bc37605c9ada9f8f256f2b73",
+    "lib/popup.ts": "e2dbbe2dbd3daaca4652a0839d027943127fe94752fb8233f2068990ce92c530",
     "lib/setting-anchor.ts": "54af3806a822160cad48688d605302d3c44a93f9ea02b62d0b9f1319079cd54a",
     "lib/settings.ts": "fe93f89fbb1dbd0237a7d2880165a3bb9e54cdf88a039b4fac7439cf270cfe09",
     "lib/utils.ts": "e46429536f43f5910f5b2b0c50bb2769b510a4558bb4b5d20a3b0a9091dbf7c3",
     "rich/EmojiGlyph.tsx": "07941e811a0899e37d4dd482bf0a4c80e720519985e11d415e10ab94ba4505b6",
     "rich/RichEditor.tsx": "57f3c018566f2c39d7e16bcba0438b3e8b57fc0fec39251e5e703915a9bfa84f",
-    "rich/RichText.tsx": "656ba1fc39292aebcbaa742ad7231bb88eb1ce2dd483b4a9d5bfeef458836563",
+    "rich/RichText.tsx": "14d79b554c6b7d7f428d97936ef86799d72c2d9e947c53dd2c5bfeeb16627c7b",
     "rich/jump.ts": "47c222adcf55dd48ee7e3a40a56fd909a75b29b675edf51b0f43a96c57f5c43f",
     "settings/QrCode.tsx": "a2b825e64607bdb1bc31918a47545313efbdff117c0f172c07055480a4bb9d39",
     "ui/Busy.tsx": "27a2bb4de753d7c34fde00daec2da7e92c523add5174a7d5d4739b7ea8950fcc",
