@@ -37,13 +37,11 @@ export function endChat() {
 }
 
 /**
- * The text behind a link QR: the recovery code itself, or a kryoto:// link
- * that carries it (`...?code=XXXX-...`). Groups of four stay as they are.
+ * The text behind a link QR: the recovery code itself, never a link (a secret
+ * in an address ends up in histories and logs). Groups of four stay as they are.
  */
 function linkCode(scanned: string): string {
-  const text = scanned.trim()
-  const fromLink = /[?&]code=([0-9A-Za-z-]+)/.exec(text)?.[1]
-  return (fromLink ? decodeURIComponent(fromLink) : text).replace(/\s+/g, '').toUpperCase()
+  return scanned.trim().replace(/\s+/g, '').toUpperCase()
 }
 
 /** The camera, for a phone linking this account's chat identity from another device. */
