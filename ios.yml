@@ -1,0 +1,84 @@
+name: iOS unsigned IPA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ipa:
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios
+      - run: pnpm install --frozen-lockfile
+
+      # Small iOS fixes, applied only inside this build.
+      - name: Patch for iOS
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def swap(file, old, new):
+              p = Path(file)
+              text = p.read_text()
+              if old not in text:
+                  raise SystemExit(f"Patch no longer matches {file}")
+              p.write_text(text.replace(old, new, 1))
+
+          # Keep content clear of the notch and home indicator.
+          swap("mobile.html",
+               "--sat: 0px; --sab: 0px; --sal: 0px; --sar: 0px;",
+               "--sat: env(safe-area-inset-top, 0px); --sab: env(safe-area-inset-bottom, 0px); "
+               "--sal: env(safe-area-inset-left, 0px); --sar: env(safe-area-inset-right, 0px);")
+
+          # Ignore Android-only background calls instead of showing errors.
+          swap("mobile/src-tauri/src/platform.rs",
+               "        let _ = (app, payload);\n",
+               "        let _ = (app, payload);\n"
+               "        if matches!(action.as_str(), \"configure\" | \"observe\" | \"poll\") {\n"
+               "            return Ok(serde_json::Value::Null);\n"
+               "        }\n")
+
+          # Permission prompts iOS requires.
+          Path("mobile/src-tauri/Info.ios.plist").write_text("""<?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>NSCameraUsageDescription</key>
+            <string>Scan the pairing QR code shown by Kryoto Desktop.</string>
+            <key>NSLocalNetworkUsageDescription</key>
+            <string>Connect to Kryoto Desktop on your Wi-Fi.</string>
+            <key>NSMicrophoneUsageDescription</key>
+            <string>Use your microphone for voice calls in Chats.</string>
+          </dict>
+          </plist>
+          """)
+          PY
+
+      - name: Create the Xcode project
+        working-directory: mobile
+        run: |
+          pnpm tauri ios init --ci
+          pnpm tauri icon src-tauri/icons/icon.png
+
+      - name: Build
+        working-directory: mobile
+        run: pnpm tauri ios build --no-sign
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Kryoto-unsigned-ipa
+          path: mobile/src-tauri/gen/apple/build/**/*.ipa
+          if-no-files-found: error
